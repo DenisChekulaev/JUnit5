@@ -1,6 +1,7 @@
 package guru.qa;
 
 import com.codeborne.selenide.CollectionCondition;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -23,20 +24,21 @@ public class ParameterizedTestJUnit5 extends TestBase {
         $(".catalog-complex-card__name").shouldHave(text(testData));
     }
 
+    @DisplayName("Проверка застройщика у ЖК")
     @CsvSource(value ={
-            "Днепровская роща, Днепровская роща",
-            "Fresh, Fresh",
+            "Днепровская роща, Комстрой",
+            "Fresh, АльфаСтройКомплекс",
     })
-    @ParameterizedTest(name = "Проверка поиска ЖК {0} результаты содержат текст {1}")
+    @ParameterizedTest(name = "Проверка застройщика ЖК {0} результаты содержат текст {1}")
     void commonComplexSearchTest(String testData, String expectedResult) {
         open("https://o-z.broker/catalog");
         $("#mat-input-0").setValue(testData).pressEnter();
-        $(".catalog-complex-card__name").shouldHave(text(expectedResult));
+        $(".catalog-complex-card__developer").shouldHave(text(expectedResult));
     }
 static Stream<Arguments> selenideSearchCityTest(){
         return Stream.of(
-                Arguments.of("Ростов-на-Дону", List.of("Ростов-на-Дону")),
-                Arguments.of("Краснодар", List.of("Краснодар"))
+                Arguments.of("Ростов-на-Дону", List.of("г. Ростов-на-Дону")),
+                    Arguments.of("Краснодар", List.of("г. Краснодар"))
         );
 }
     @MethodSource("selenideSearchCityTest")
@@ -45,6 +47,6 @@ static Stream<Arguments> selenideSearchCityTest(){
         open("https://o-z.broker/catalog");
         $("#mat-chip-list-input-0").click();
         $$(".mat-checkbox-label").find((text(city))).click();
-        $$(".private-layout-page").shouldHave(CollectionCondition.texts(expectedResult));
+        $$(".g-catalog-complexes-list").shouldHave(CollectionCondition.texts(expectedResult));
     }
 }
